@@ -1,0 +1,8 @@
+{
+  "description": "Old Intune test group",
+  "displayName": "SG-Intune-Test-2023",
+  "groupTypes": [],
+  "id": "1b546366-603e-5489-bf87-a898fe2ec32a",
+  "mailEnabled": false,
+  "securityEnabled": true
+}

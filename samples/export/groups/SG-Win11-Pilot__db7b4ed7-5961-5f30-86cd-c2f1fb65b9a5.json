@@ -1,0 +1,8 @@
+{
+  "description": "Pilot devices for the Windows 11 rollout",
+  "displayName": "SG-Win11-Pilot",
+  "groupTypes": [],
+  "id": "db7b4ed7-5961-5f30-86cd-c2f1fb65b9a5",
+  "mailEnabled": false,
+  "securityEnabled": true
+}

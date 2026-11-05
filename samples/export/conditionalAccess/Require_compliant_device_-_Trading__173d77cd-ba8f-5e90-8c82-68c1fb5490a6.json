@@ -1,0 +1,25 @@
+{
+  "@odata.type": "#microsoft.graph.conditionalAccessPolicy",
+  "conditions": {
+    "applications": {
+      "includeApplications": [
+        "All"
+      ]
+    },
+    "users": {
+      "excludeGroups": [],
+      "includeGroups": [
+        "c2f8ee1a-4ca3-5883-8384-2a069e8a6fbe"
+      ]
+    }
+  },
+  "displayName": "Require compliant device - Trading",
+  "grantControls": {
+    "builtInControls": [
+      "compliantDevice"
+    ],
+    "operator": "OR"
+  },
+  "id": "173d77cd-ba8f-5e90-8c82-68c1fb5490a6",
+  "state": "enabled"
+}

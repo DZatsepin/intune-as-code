@@ -1,0 +1,15 @@
+{
+  "@odata.type": "#microsoft.graph.windows10GeneralConfiguration",
+  "assignments": [
+    {
+      "id": "8701f5f7-5a1a-5ad3-a942-a2085f2b77f8",
+      "target": {
+        "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+        "groupId": "ad9f610e-fefc-5a48-b749-67031c4b06e5"
+      }
+    }
+  ],
+  "displayName": "Win10 - Legacy restrictions",
+  "id": "cec7d7b6-5381-5c0b-89cc-288eeb268efe",
+  "passwordRequired": true
+}

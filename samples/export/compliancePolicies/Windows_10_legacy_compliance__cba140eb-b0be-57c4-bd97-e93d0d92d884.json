@@ -1,0 +1,22 @@
+{
+  "@odata.type": "#microsoft.graph.windows10CompliancePolicy",
+  "assignments": [
+    {
+      "id": "04bf13a9-2964-5607-9ae1-1ef3c441a226",
+      "target": {
+        "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+        "groupId": "ad9f610e-fefc-5a48-b749-67031c4b06e5"
+      }
+    },
+    {
+      "id": "4acf4389-db39-5ad1-8c57-4122057fbd7a",
+      "target": {
+        "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+        "groupId": "c6f483ad-abe1-5ac6-896b-dcd0639e00fb"
+      }
+    }
+  ],
+  "bitLockerEnabled": true,
+  "displayName": "Windows 10 legacy compliance",
+  "id": "cba140eb-b0be-57c4-bd97-e93d0d92d884"
+}

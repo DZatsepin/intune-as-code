@@ -1,0 +1,8 @@
+{
+  "description": "Devices kept on Windows 10 for legacy apps",
+  "displayName": "SG-Win10-Exceptions",
+  "groupTypes": [],
+  "id": "c6f483ad-abe1-5ac6-896b-dcd0639e00fb",
+  "mailEnabled": false,
+  "securityEnabled": true
+}

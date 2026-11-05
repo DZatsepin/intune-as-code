@@ -1,0 +1,24 @@
+{
+  "@odata.type": "#microsoft.graph.deviceManagementConfigurationPolicy",
+  "assignments": [
+    {
+      "id": "90d4b6ce-8491-5d6c-b895-889416330409",
+      "target": {
+        "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+        "groupId": "0d9645ce-2bdc-5064-be2d-016bd581400a"
+      }
+    },
+    {
+      "id": "969cdd14-9c8d-5874-8f1d-15105dba3cd2",
+      "target": {
+        "@odata.type": "#microsoft.graph.exclusionGroupAssignmentTarget",
+        "groupId": "c6f483ad-abe1-5ac6-896b-dcd0639e00fb"
+      }
+    }
+  ],
+  "displayName": "Win11 - Security baseline",
+  "id": "665b91d5-3496-5cf2-aaa1-28d45cbcb0f1",
+  "name": "Win11 - Security baseline",
+  "platforms": "windows10",
+  "technologies": "mdm"
+}

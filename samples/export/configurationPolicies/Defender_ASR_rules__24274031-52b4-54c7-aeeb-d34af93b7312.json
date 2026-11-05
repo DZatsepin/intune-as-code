@@ -1,0 +1,24 @@
+{
+  "@odata.type": "#microsoft.graph.deviceManagementConfigurationPolicy",
+  "assignments": [
+    {
+      "id": "abdbea35-4c6d-5185-82fc-335bc52d4199",
+      "target": {
+        "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+        "groupId": "0d9645ce-2bdc-5064-be2d-016bd581400a"
+      }
+    },
+    {
+      "id": "6669d1a1-e3cd-5dc7-9bfb-51ab7439f130",
+      "target": {
+        "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+        "groupId": "c2f8ee1a-4ca3-5883-8384-2a069e8a6fbe"
+      }
+    }
+  ],
+  "displayName": "Defender ASR rules",
+  "id": "24274031-52b4-54c7-aeeb-d34af93b7312",
+  "name": "Defender ASR rules",
+  "platforms": "windows10",
+  "technologies": "mdm,microsoftSense"
+}

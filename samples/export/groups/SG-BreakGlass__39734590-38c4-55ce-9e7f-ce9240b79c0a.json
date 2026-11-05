@@ -1,0 +1,8 @@
+{
+  "description": "Emergency access accounts",
+  "displayName": "SG-BreakGlass",
+  "groupTypes": [],
+  "id": "39734590-38c4-55ce-9e7f-ce9240b79c0a",
+  "mailEnabled": false,
+  "securityEnabled": true
+}

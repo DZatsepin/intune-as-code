@@ -1,0 +1,32 @@
+{
+  "@odata.type": "#microsoft.graph.conditionalAccessPolicy",
+  "conditions": {
+    "applications": {
+      "includeApplications": [
+        "All"
+      ]
+    },
+    "clientAppTypes": [
+      "exchangeActiveSync",
+      "other"
+    ],
+    "users": {
+      "excludeGroups": [
+        "39734590-38c4-55ce-9e7f-ce9240b79c0a"
+      ],
+      "includeGroups": [],
+      "includeUsers": [
+        "All"
+      ]
+    }
+  },
+  "displayName": "Block legacy authentication",
+  "grantControls": {
+    "builtInControls": [
+      "block"
+    ],
+    "operator": "OR"
+  },
+  "id": "d8b70659-e53e-592c-9fea-983da38eb80e",
+  "state": "enabled"
+}

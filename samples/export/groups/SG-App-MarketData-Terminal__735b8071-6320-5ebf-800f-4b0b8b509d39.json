@@ -1,0 +1,8 @@
+{
+  "description": "Market data terminal users",
+  "displayName": "SG-App-MarketData-Terminal",
+  "groupTypes": [],
+  "id": "735b8071-6320-5ebf-800f-4b0b8b509d39",
+  "mailEnabled": false,
+  "securityEnabled": true
+}

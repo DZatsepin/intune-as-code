@@ -1,0 +1,15 @@
+{
+  "@odata.type": "#microsoft.graph.winGetApp",
+  "assignments": [
+    {
+      "id": "01baeee4-0278-5260-a2b1-61ff56e8f624",
+      "intent": "required",
+      "target": {
+        "@odata.type": "#microsoft.graph.allDevicesAssignmentTarget"
+      }
+    }
+  ],
+  "displayName": "Company Portal",
+  "id": "a1e844c4-d751-5a68-afe5-e681c46e84d8",
+  "publisher": "Microsoft"
+}

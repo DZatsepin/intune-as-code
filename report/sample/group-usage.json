@@ -1,0 +1,427 @@
+{
+  "generatedAt": "2026-11-05T11:33:08Z",
+  "source": "export",
+  "summary": {
+    "groups": 15,
+    "inUse": 12,
+    "unused": 3,
+    "objects": 15,
+    "caExclusions": 2
+  },
+  "groups": [
+    {
+      "id": "735b8071-6320-5ebf-800f-4b0b8b509d39",
+      "displayName": "SG-App-MarketData-Terminal",
+      "description": "Market data terminal users",
+      "dynamic": false,
+      "usage": [
+        {
+          "objectId": "8edbdf83-0aac-575e-b911-2b700e708a0a",
+          "objectName": "Market Data Terminal",
+          "category": "mobileApps",
+          "label": "App",
+          "mode": "include",
+          "detail": "required"
+        }
+      ],
+      "status": "in-use",
+      "warning": null
+    },
+    {
+      "id": "d477639d-8cfd-5af5-9c20-c7eb7999445b",
+      "displayName": "SG-App-Zoom",
+      "description": "Zoom users",
+      "dynamic": false,
+      "usage": [
+        {
+          "objectId": "fd5498ce-d491-5c7d-8df6-69f07d06be9c",
+          "objectName": "Zoom Workplace",
+          "category": "mobileApps",
+          "label": "App",
+          "mode": "include",
+          "detail": "required"
+        }
+      ],
+      "status": "in-use",
+      "warning": null
+    },
+    {
+      "id": "39734590-38c4-55ce-9e7f-ce9240b79c0a",
+      "displayName": "SG-BreakGlass",
+      "description": "Emergency access accounts",
+      "dynamic": false,
+      "usage": [
+        {
+          "objectId": "d8b70659-e53e-592c-9fea-983da38eb80e",
+          "objectName": "Block legacy authentication",
+          "category": "conditionalAccess",
+          "label": "Conditional Access",
+          "mode": "exclude",
+          "detail": null
+        },
+        {
+          "objectId": "7d8ab4aa-58f5-53f9-ad69-107614e022bd",
+          "objectName": "Require MFA for all users",
+          "category": "conditionalAccess",
+          "label": "Conditional Access",
+          "mode": "exclude",
+          "detail": null
+        }
+      ],
+      "status": "in-use",
+      "warning": "Excluded from Conditional Access: deleting it changes who the policy applies to."
+    },
+    {
+      "id": "8db49d3c-4484-5206-8034-9422bacaf4d8",
+      "displayName": "SG-Finance-Laptops",
+      "description": "Finance team laptops",
+      "dynamic": false,
+      "usage": [
+        {
+          "objectId": "1c690617-f230-596a-8c6b-dc1342130480",
+          "objectName": "BitLocker - Finance",
+          "category": "configurationPolicies",
+          "label": "Settings catalog",
+          "mode": "include",
+          "detail": null
+        }
+      ],
+      "status": "in-use",
+      "warning": null
+    },
+    {
+      "id": "1b546366-603e-5489-bf87-a898fe2ec32a",
+      "displayName": "SG-Intune-Test-2023",
+      "description": "Old Intune test group",
+      "dynamic": false,
+      "usage": [],
+      "status": "unused",
+      "warning": null
+    },
+    {
+      "id": "f3898b71-450a-5689-b22f-758dfc024411",
+      "displayName": "SG-MFA-Exclusion-Temp",
+      "description": "Temporary MFA exclusion for migration",
+      "dynamic": false,
+      "usage": [
+        {
+          "objectId": "7d8ab4aa-58f5-53f9-ad69-107614e022bd",
+          "objectName": "Require MFA for all users",
+          "category": "conditionalAccess",
+          "label": "Conditional Access",
+          "mode": "exclude",
+          "detail": null
+        }
+      ],
+      "status": "in-use",
+      "warning": "Excluded from Conditional Access: deleting it changes who the policy applies to."
+    },
+    {
+      "id": "c2f8ee1a-4ca3-5883-8384-2a069e8a6fbe",
+      "displayName": "SG-Trading-Desktops",
+      "description": "Trading floor desktops",
+      "dynamic": false,
+      "usage": [
+        {
+          "objectId": "24274031-52b4-54c7-aeeb-d34af93b7312",
+          "objectName": "Defender ASR rules",
+          "category": "configurationPolicies",
+          "label": "Settings catalog",
+          "mode": "include",
+          "detail": null
+        },
+        {
+          "objectId": "173d77cd-ba8f-5e90-8c82-68c1fb5490a6",
+          "objectName": "Require compliant device - Trading",
+          "category": "conditionalAccess",
+          "label": "Conditional Access",
+          "mode": "include",
+          "detail": null
+        }
+      ],
+      "status": "in-use",
+      "warning": null
+    },
+    {
+      "id": "c3234857-8108-58eb-bd6c-5b5a9e7404d2",
+      "displayName": "SG-Update-Ring-Fast",
+      "description": "Fast update ring devices",
+      "dynamic": false,
+      "usage": [
+        {
+          "objectId": "5fd99248-f0a7-52e5-99bf-e26939bd15d9",
+          "objectName": "Update ring - Pilot",
+          "category": "deviceConfigurations",
+          "label": "Configuration profile",
+          "mode": "include",
+          "detail": null
+        }
+      ],
+      "status": "in-use",
+      "warning": null
+    },
+    {
+      "id": "c6f483ad-abe1-5ac6-896b-dcd0639e00fb",
+      "displayName": "SG-Win10-Exceptions",
+      "description": "Devices kept on Windows 10 for legacy apps",
+      "dynamic": false,
+      "usage": [
+        {
+          "objectId": "665b91d5-3496-5cf2-aaa1-28d45cbcb0f1",
+          "objectName": "Win11 - Security baseline",
+          "category": "configurationPolicies",
+          "label": "Settings catalog",
+          "mode": "exclude",
+          "detail": null
+        },
+        {
+          "objectId": "cba140eb-b0be-57c4-bd97-e93d0d92d884",
+          "objectName": "Windows 10 legacy compliance",
+          "category": "compliancePolicies",
+          "label": "Compliance policy",
+          "mode": "include",
+          "detail": null
+        }
+      ],
+      "status": "in-use",
+      "warning": null
+    },
+    {
+      "id": "ad9f610e-fefc-5a48-b749-67031c4b06e5",
+      "displayName": "SG-Win10-Legacy",
+      "description": "Remaining Windows 10 devices",
+      "dynamic": false,
+      "usage": [
+        {
+          "objectId": "cec7d7b6-5381-5c0b-89cc-288eeb268efe",
+          "objectName": "Win10 - Legacy restrictions",
+          "category": "deviceConfigurations",
+          "label": "Configuration profile",
+          "mode": "include",
+          "detail": null
+        },
+        {
+          "objectId": "cba140eb-b0be-57c4-bd97-e93d0d92d884",
+          "objectName": "Windows 10 legacy compliance",
+          "category": "compliancePolicies",
+          "label": "Compliance policy",
+          "mode": "include",
+          "detail": null
+        }
+      ],
+      "status": "in-use",
+      "warning": null
+    },
+    {
+      "id": "0d9645ce-2bdc-5064-be2d-016bd581400a",
+      "displayName": "SG-Win11-AllDevices",
+      "description": "All Windows 11 devices",
+      "dynamic": false,
+      "usage": [
+        {
+          "objectId": "3e52b974-68ea-5a10-8946-06b00e533048",
+          "objectName": "Update ring - Broad",
+          "category": "deviceConfigurations",
+          "label": "Configuration profile",
+          "mode": "include",
+          "detail": null
+        },
+        {
+          "objectId": "24274031-52b4-54c7-aeeb-d34af93b7312",
+          "objectName": "Defender ASR rules",
+          "category": "configurationPolicies",
+          "label": "Settings catalog",
+          "mode": "include",
+          "detail": null
+        },
+        {
+          "objectId": "665b91d5-3496-5cf2-aaa1-28d45cbcb0f1",
+          "objectName": "Win11 - Security baseline",
+          "category": "configurationPolicies",
+          "label": "Settings catalog",
+          "mode": "include",
+          "detail": null
+        },
+        {
+          "objectId": "2a1f3639-456c-5d1c-8148-d67e5528af66",
+          "objectName": "Windows 11 compliance",
+          "category": "compliancePolicies",
+          "label": "Compliance policy",
+          "mode": "include",
+          "detail": null
+        }
+      ],
+      "status": "in-use",
+      "warning": null
+    },
+    {
+      "id": "db7b4ed7-5961-5f30-86cd-c2f1fb65b9a5",
+      "displayName": "SG-Win11-Pilot",
+      "description": "Pilot devices for the Windows 11 rollout",
+      "dynamic": false,
+      "usage": [
+        {
+          "objectId": "3e52b974-68ea-5a10-8946-06b00e533048",
+          "objectName": "Update ring - Broad",
+          "category": "deviceConfigurations",
+          "label": "Configuration profile",
+          "mode": "exclude",
+          "detail": null
+        },
+        {
+          "objectId": "5fd99248-f0a7-52e5-99bf-e26939bd15d9",
+          "objectName": "Update ring - Pilot",
+          "category": "deviceConfigurations",
+          "label": "Configuration profile",
+          "mode": "include",
+          "detail": null
+        }
+      ],
+      "status": "in-use",
+      "warning": null
+    },
+    {
+      "id": "18aab69b-54da-50aa-9238-02df0d7bf955",
+      "displayName": "SG-Win11-Wave1",
+      "description": "Windows 11 rollout wave 1 (completed)",
+      "dynamic": false,
+      "usage": [],
+      "status": "unused",
+      "warning": null
+    },
+    {
+      "id": "b22ca84e-5271-5d59-9e45-467c3f22bda6",
+      "displayName": "SG-Win11-Wave2",
+      "description": "Windows 11 rollout wave 2 (completed)",
+      "dynamic": false,
+      "usage": [
+        {
+          "objectId": "46293cfc-790a-5a22-a13d-4e8dbd6179fe",
+          "objectName": "Remove Win10 bloatware",
+          "category": "scripts",
+          "label": "Script",
+          "mode": "include",
+          "detail": null
+        }
+      ],
+      "status": "in-use",
+      "warning": null
+    },
+    {
+      "id": "176a766b-4208-540d-b829-b1a42a76277e",
+      "displayName": "SG-Win11-Wave3",
+      "description": "Windows 11 rollout wave 3 (completed)",
+      "dynamic": false,
+      "usage": [],
+      "status": "unused",
+      "warning": null
+    }
+  ],
+  "objects": [
+    {
+      "id": "3e52b974-68ea-5a10-8946-06b00e533048",
+      "displayName": "Update ring - Broad",
+      "category": "deviceConfigurations",
+      "label": "Configuration profile",
+      "state": null
+    },
+    {
+      "id": "5fd99248-f0a7-52e5-99bf-e26939bd15d9",
+      "displayName": "Update ring - Pilot",
+      "category": "deviceConfigurations",
+      "label": "Configuration profile",
+      "state": null
+    },
+    {
+      "id": "cec7d7b6-5381-5c0b-89cc-288eeb268efe",
+      "displayName": "Win10 - Legacy restrictions",
+      "category": "deviceConfigurations",
+      "label": "Configuration profile",
+      "state": null
+    },
+    {
+      "id": "1c690617-f230-596a-8c6b-dc1342130480",
+      "displayName": "BitLocker - Finance",
+      "category": "configurationPolicies",
+      "label": "Settings catalog",
+      "state": null
+    },
+    {
+      "id": "24274031-52b4-54c7-aeeb-d34af93b7312",
+      "displayName": "Defender ASR rules",
+      "category": "configurationPolicies",
+      "label": "Settings catalog",
+      "state": null
+    },
+    {
+      "id": "665b91d5-3496-5cf2-aaa1-28d45cbcb0f1",
+      "displayName": "Win11 - Security baseline",
+      "category": "configurationPolicies",
+      "label": "Settings catalog",
+      "state": null
+    },
+    {
+      "id": "cba140eb-b0be-57c4-bd97-e93d0d92d884",
+      "displayName": "Windows 10 legacy compliance",
+      "category": "compliancePolicies",
+      "label": "Compliance policy",
+      "state": null
+    },
+    {
+      "id": "2a1f3639-456c-5d1c-8148-d67e5528af66",
+      "displayName": "Windows 11 compliance",
+      "category": "compliancePolicies",
+      "label": "Compliance policy",
+      "state": null
+    },
+    {
+      "id": "46293cfc-790a-5a22-a13d-4e8dbd6179fe",
+      "displayName": "Remove Win10 bloatware",
+      "category": "scripts",
+      "label": "Script",
+      "state": null
+    },
+    {
+      "id": "a1e844c4-d751-5a68-afe5-e681c46e84d8",
+      "displayName": "Company Portal",
+      "category": "mobileApps",
+      "label": "App",
+      "state": null
+    },
+    {
+      "id": "8edbdf83-0aac-575e-b911-2b700e708a0a",
+      "displayName": "Market Data Terminal",
+      "category": "mobileApps",
+      "label": "App",
+      "state": null
+    },
+    {
+      "id": "fd5498ce-d491-5c7d-8df6-69f07d06be9c",
+      "displayName": "Zoom Workplace",
+      "category": "mobileApps",
+      "label": "App",
+      "state": null
+    },
+    {
+      "id": "d8b70659-e53e-592c-9fea-983da38eb80e",
+      "displayName": "Block legacy authentication",
+      "category": "conditionalAccess",
+      "label": "Conditional Access",
+      "state": "enabled"
+    },
+    {
+      "id": "173d77cd-ba8f-5e90-8c82-68c1fb5490a6",
+      "displayName": "Require compliant device - Trading",
+      "category": "conditionalAccess",
+      "label": "Conditional Access",
+      "state": "enabled"
+    },
+    {
+      "id": "7d8ab4aa-58f5-53f9-ad69-107614e022bd",
+      "displayName": "Require MFA for all users",
+      "category": "conditionalAccess",
+      "label": "Conditional Access",
+      "state": "enabled"
+    }
+  ]
+}

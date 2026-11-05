@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Group usage: where is each Entra ID group used?</title>
+<meta name="description" content="Find where every Entra ID group is used across Intune and Conditional Access, and which groups are safe to delete. Offline, from a config-as-code export.">
+<meta property="og:title" content="Can I delete this group?">
+<meta property="og:description" content="Where every Entra ID group is used across Intune and Conditional Access, from a config-as-code export.">
+<meta property="og:image" content="https://dzatsepin.github.io/intune-as-code/docs/report.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root { --bg:#05070b; --panel:#0a0e14; --text:#e9eef5; --muted:#98a3b3; --line:#18202b; --box:#0d1219; --border:#1f2b38;
+    --accent:#ff7a1a; --ok:#3ddc97; --warn:#ffd23f; --bad:#ff3b5c; --grid:rgba(255,255,255,.035); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 Inter, system-ui, "Segoe UI", sans-serif; }
+  header { display:flex; align-items:center; gap:12px; padding:12px 20px; border-bottom:1px solid var(--line); background:var(--panel); flex-wrap:wrap; }
+  h1 { margin:0; font-size:15px; letter-spacing:.14em; text-transform:uppercase; } h1 span { color:var(--accent); }
+  header .sub { color:var(--muted); font-size:13px; }
+  .sp { flex:1; }
+  input[type=search] { background:var(--box); border:1px solid var(--border); color:var(--text); padding:6px 12px; border-radius:6px; width:240px; font:inherit; }
+  button, .btn { font:inherit; border:1px solid var(--line); background:transparent; color:var(--text); padding:5px 12px; border-radius:6px; cursor:pointer; }
+  button:hover, .btn:hover { border-color:var(--accent); }
+  button.active { background:var(--accent); border-color:var(--accent); color:#0a0e14; font-weight:600; }
+  input[type=file] { display:none; }
+  .stats { display:flex; gap:10px; padding:12px 20px; flex-wrap:wrap; border-bottom:1px solid var(--line); }
+  .stat { background:var(--box); border:1px solid var(--border); border-radius:10px; padding:8px 14px; min-width:130px; }
+  .stat b { display:block; font:700 22px ui-monospace, Consolas, monospace; }
+  .stat span { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; }
+  .stat.acc b { color:var(--accent); } .stat.ok b { color:var(--ok); } .stat.warn b { color:var(--warn); }
+  main { display:grid; grid-template-columns:minmax(0,1fr) 360px; }
+  #canvas { padding:14px 20px; background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px); background-size:32px 32px; overflow:auto; }
+  #svg { display:block; margin:0 auto; width:auto; height:auto; max-width:100%; }
+  aside { border-left:1px solid var(--line); background:var(--panel); padding:16px 18px; }
+  aside h2 { margin:0 0 6px; font-size:18px; word-break:break-word; }
+  aside h3 { font-size:11.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin:18px 0 6px; }
+  .verdict { margin:10px 0; padding:11px 13px; border-radius:8px; font-weight:650; font-size:15px; }
+  .verdict.keep { border:1px solid var(--bad); color:var(--bad); background:rgba(255,59,92,.08); }
+  .verdict.safe { border:1px solid var(--ok); color:var(--ok); background:rgba(61,220,151,.08); }
+  .note { border-left:3px solid var(--warn); padding:6px 10px; color:var(--warn); background:rgba(255,210,63,.06); margin:10px 0; }
+  aside ul { padding-left:18px; margin:6px 0; } aside li { margin:6px 0; }
+  .tag { font-size:11px; padding:1px 7px; border-radius:10px; border:1px solid var(--border); color:var(--muted); margin-left:6px; }
+  .tag.exclude { color:var(--warn); border-color:var(--warn); } .tag.other { color:var(--muted); border-style:dashed; }
+  .muted { color:var(--muted); } .link { color:var(--accent); cursor:pointer; }
+  svg text { fill:var(--text); font-family:inherit; }
+  .colhead { font:10.5px ui-monospace, Consolas, monospace; fill:var(--muted)!important; letter-spacing:.14em; text-transform:uppercase; }
+  .node { cursor:pointer; } .node rect { fill:var(--box); stroke:var(--border); stroke-width:1.2; }
+  .node .n { font-size:12.5px; font-weight:650; } .node .m { font:9.5px ui-monospace, Consolas, monospace; fill:var(--muted); letter-spacing:.05em; text-transform:uppercase; }
+  .node.unused rect { stroke-dasharray:4 4; } .node.unused .m { fill:var(--ok); }
+  .node.caex .m { fill:var(--warn); }
+  .node.sel rect { stroke:var(--accent); stroke-width:2.4; } .node.sel.unused rect { stroke:var(--ok); } .node.on rect { stroke:var(--accent); }
+  .node.dim { opacity:.22; }
+  .edge { fill:none; stroke:#223040; stroke-width:1.2; } .edge.on { stroke:var(--accent); stroke-width:2; opacity:.6; }
+  .edge.on.exclude { stroke:var(--warn); stroke-dasharray:6 4; } .edge.on.other { stroke:var(--muted); stroke-dasharray:2 4; }
+  .beam { fill:none; stroke:#ff8a2a; stroke-width:3.5; stroke-linecap:round; stroke-dasharray:7 93; filter:drop-shadow(0 0 4px #ff8a2a); animation:beam 1.4s linear infinite; pointer-events:none; }
+  .beam.exclude { stroke:var(--warn); filter:drop-shadow(0 0 4px var(--warn)); }
+  @keyframes beam { from{stroke-dashoffset:100} to{stroke-dashoffset:0} }
+  @media (prefers-reduced-motion: reduce) { .beam { display:none; } }
+  .legend { color:var(--muted); font-size:12px; margin-top:8px; display:flex; gap:18px; flex-wrap:wrap; }
+  .banner { margin:10px 20px; padding:10px 12px; border:1px solid var(--warn); border-radius:8px; }
+  @media (max-width: 1000px) { main { grid-template-columns:1fr; } aside { border-left:0; border-top:1px solid var(--line); } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Group <span>usage</span></h1>
+  <span class="sub" id="sub">Sample: Pokatyt Incorporated (fictional tenant)</span>
+  <span class="sp"></span>
+  <input type="search" id="q" placeholder="Search a group…" autocomplete="off" aria-label="Search a group">
+  <button id="unusedBtn" title="Show only groups that are not used anywhere">Unused only</button>
+  <label class="btn" title="Open a group-usage.json produced by Get-GroupUsage.ps1">Load JSON<input type="file" id="file" accept=".json,application/json"></label>
+</header>
+<div class="stats" id="stats"></div>
+<div id="banner"></div>
+<main>
+  <div id="canvas"><svg id="svg" role="img" aria-label="Groups and the policies that reference them"></svg>
+    <div class="legend"><span><b style="color:var(--accent)">━</b> assigned</span><span><b style="color:var(--warn)">┅</b> excluded</span><span><b style="color:var(--muted)">┈</b> ID mentioned elsewhere</span><span><b style="color:var(--ok)">┄</b> not used anywhere</span></div>
+  </div>
+  <aside id="panel"></aside>
+</main>
+<script>
+"use strict";
+const COLUMNS = [
+  { title: "Intune policies", cats: ["deviceConfigurations", "configurationPolicies", "groupPolicyConfigs", "compliancePolicies"] },
+  { title: "Apps and scripts", cats: ["mobileApps", "scripts"] },
+  { title: "Conditional Access", cats: ["conditionalAccess"] },
+];
+const W = 200, H = 44, GX = 280, ROW = 52, TOP = 34;
+let data = null, sel = null, unusedOnly = false;
+const pos = {};
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const trim = (s, n) => s.length > n ? s.slice(0, n - 1) + "…" : s;
+const grp = id => data.groups.find(g => g.id === id);
+
+function visibleGroups() { return data.groups.filter(g => !unusedOnly || g.status === "unused"); }
+function usedObjects() {
+  const ids = new Set(data.groups.flatMap(g => (g.usage || []).map(u => u.objectId)));
+  return data.objects.filter(o => ids.has(o.id));
+}
+function layout(groups, objs) {
+  groups.forEach((g, i) => pos["g:" + g.id] = { x: 0, y: TOP + i * ROW });
+  const heights = [groups.length * ROW];
+  COLUMNS.forEach((c, ci) => {
+    const list = objs.filter(o => c.cats.includes(o.category));
+    list.forEach((o, i) => pos["o:" + o.id] = { x: (ci + 1) * GX, y: TOP + i * ROW });
+    heights.push(list.length * ROW);
+  });
+  return TOP + Math.max(...heights) + 10;
+}
+function path(a, b, k) {
+  const x1 = a.x + W, y1 = a.y + H / 2 + k, x2 = b.x, y2 = b.y + H / 2 + k, d = (x2 - x1) * 0.5;
+  return `M${x1},${y1} C${x1 + d},${y1} ${x2 - d},${y2} ${x2},${y2}`;
+}
+
+function render() {
+  if (!data) return;
+  const groups = visibleGroups(), objs = usedObjects();
+  const height = layout(groups, objs), width = GX * COLUMNS.length + W + 10;
+  const svg = document.getElementById("svg");
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`); svg.setAttribute("width", width); svg.setAttribute("height", height);
+  const s = data.summary;
+  document.getElementById("stats").innerHTML =
+    `<div class="stat"><b>${s.groups}</b><span>groups scanned</span></div>` +
+    `<div class="stat acc"><b>${s.inUse}</b><span>still in use</span></div>` +
+    `<div class="stat ok"><b>${s.unused}</b><span>not used anywhere</span></div>` +
+    `<div class="stat warn"><b>${s.caExclusions}</b><span>excluded from CA</span></div>` +
+    `<div class="stat"><b>${s.objects}</b><span>policies and apps</span></div>`;
+  document.getElementById("unusedBtn").classList.toggle("active", unusedOnly);
+
+  let out = `<text class="colhead" x="0" y="18">Entra ID groups</text>` +
+    COLUMNS.map((c, i) => `<text class="colhead" x="${(i + 1) * GX}" y="18">${c.title}</text>`).join("");
+  const selG = sel ? grp(sel) : null, active = selG ? selG.usage : [];
+  const onObj = new Set(active.map(u => u.objectId));
+  let edges = "", beams = "";
+  groups.forEach(g => (g.usage || []).forEach((u, i) => {
+    const a = pos["g:" + g.id], b = pos["o:" + u.objectId]; if (!a || !b) return;
+    const on = sel === g.id, d = path(a, b, (i % 3 - 1) * 4);
+    edges += `<path class="edge ${on ? "on " + u.mode : ""}" d="${d}" ${sel && !on ? 'opacity=".2"' : ""}/>`;
+    if (on && u.mode !== "other") beams += `<path class="beam ${u.mode}" d="${d}" pathLength="100" style="animation-delay:-${(i * .35) % 1.4}s"/>`;
+  }));
+  out += edges;
+  groups.forEach(g => {
+    const p = pos["g:" + g.id], n = (g.usage || []).length;
+    const cls = ["node", g.status === "unused" ? "unused" : "", g.warning ? "caex" : "", sel === g.id ? "sel" : "", sel && sel !== g.id ? "dim" : ""].join(" ");
+    const meta = g.status === "unused" ? "not used anywhere" : (g.warning ? `CA exclusion · ${n} ref${n > 1 ? "s" : ""}` : `used in ${n} place${n > 1 ? "s" : ""}`);
+    out += `<g class="${cls}" data-g="${esc(g.id)}" tabindex="0" role="button"><rect x="${p.x}" y="${p.y}" width="${W}" height="${H}" rx="9"/>` +
+      `<text class="n" x="${p.x + 12}" y="${p.y + 19}">${esc(trim(g.displayName, 26))}</text><text class="m" x="${p.x + 12}" y="${p.y + 34}">${esc(meta)}</text><title>${esc(g.displayName + (g.description ? " — " + g.description : ""))}</title></g>`;
+  });
+  objs.forEach(o => {
+    const p = pos["o:" + o.id]; if (!p) return;
+    const cls = ["node", onObj.has(o.id) ? "on" : "", sel && !onObj.has(o.id) ? "dim" : ""].join(" ");
+    out += `<g class="${cls}"><rect x="${p.x}" y="${p.y}" width="${W}" height="${H}" rx="9"/>` +
+      `<text class="n" x="${p.x + 12}" y="${p.y + 19}">${esc(trim(o.displayName, 26))}</text><text class="m" x="${p.x + 12}" y="${p.y + 34}">${esc(o.label)}</text><title>${esc(o.displayName)}</title></g>`;
+  });
+  svg.innerHTML = out + beams;
+  fitSvg();
+  renderPanel();
+}
+
+function renderPanel() {
+  const el = document.getElementById("panel");
+  if (!sel) {
+    const unused = data.groups.filter(g => g.status === "unused"), warn = data.groups.filter(g => g.warning);
+    el.innerHTML = `<h2>Can I delete this group?</h2>
+      <p class="muted">Click a group or search for it. You'll see every Intune policy, app, script and Conditional Access policy that references it, including exclusions.</p>
+      <h3>Not used anywhere (${unused.length})</h3><ul>${unused.map(g => `<li><span class="link" data-g="${esc(g.id)}">${esc(g.displayName)}</span></li>`).join("") || "<li class='muted'>None</li>"}</ul>
+      <h3>Excluded from Conditional Access (${warn.length})</h3><ul>${warn.map(g => `<li><span class="link" data-g="${esc(g.id)}">${esc(g.displayName)}</span></li>`).join("") || "<li class='muted'>None</li>"}</ul>
+      <p class="muted">Generated ${esc(data.generatedAt)} from <code>${esc(data.source)}</code>. Read-only: nothing is changed in the tenant.</p>`;
+    return;
+  }
+  const g = grp(sel);
+  if (g.status === "unused") {
+    el.innerHTML = `<h2>${esc(g.displayName)}</h2><p class="muted">${esc(g.description || "")}</p><div class="verdict safe">Used nowhere. Safe to delete.</div>
+      <p class="muted">No assignments, exclusions or ID references found in the export. Check the owner and any services outside the export${g.dynamic ? " (this is a dynamic group)" : ""}, then delete.</p>`;
+    return;
+  }
+  el.innerHTML = `<h2>${esc(g.displayName)}</h2><p class="muted">${esc(g.description || "")}</p><div class="verdict keep">Still in use. Don't delete.</div>
+    ${g.warning ? `<div class="note">${esc(g.warning)}</div>` : ""}
+    <h3>References (${g.usage.length})</h3><ul>${g.usage.map(u => `<li>${esc(u.objectName)}<span class="tag ${esc(u.mode)}">${u.mode === "include" ? "assigned" : u.mode === "exclude" ? "excluded" : "mentioned"}</span><br><span class="muted">${esc(u.label)}${u.detail ? " · " + esc(u.detail) : ""}</span></li>`).join("")}</ul>`;
+}
+
+function fitSvg() {
+  const svg = document.getElementById("svg");
+  if (innerWidth <= 1000) { svg.style.maxHeight = ""; return; }
+  svg.style.maxHeight = Math.max(320, innerHeight - svg.getBoundingClientRect().top - 44) + "px";
+}
+addEventListener("resize", () => data && fitSvg());
+document.addEventListener("click", e => {
+  const n = e.target.closest("[data-g]");
+  if (n) { sel = sel === n.dataset.g ? null : n.dataset.g; render(); }
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") { sel = null; render(); } });
+document.getElementById("q").addEventListener("input", e => {
+  const v = e.target.value.trim().toLowerCase();
+  const m = v ? data.groups.find(g => g.displayName.toLowerCase().includes(v)) : null;
+  sel = m ? m.id : null; if (m && unusedOnly && m.status !== "unused") unusedOnly = false; render();
+});
+document.getElementById("unusedBtn").onclick = () => { unusedOnly = !unusedOnly; sel = null; render(); };
+document.getElementById("file").addEventListener("change", async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try { data = JSON.parse(await f.text()); sel = null; document.getElementById("sub").textContent = "Your data: " + f.name; document.getElementById("banner").innerHTML = ""; render(); }
+  catch { document.getElementById("banner").innerHTML = `<div class="banner">That file isn't a group-usage.json from Get-GroupUsage.ps1.</div>`; }
+  e.target.value = "";
+});
+
+fetch("sample/group-usage.json").then(r => { if (!r.ok) throw 0; return r.json(); })
+  .then(d => { data = d; render(); })
+  .catch(() => { document.getElementById("banner").innerHTML = `<div class="banner">Opened from disk, so the sample can't load automatically. Use <b>Load JSON</b> and pick <code>report/sample/group-usage.json</code>, or run <code>python -m http.server</code> in the repository folder.</div>`; });
+</script>
+</body>
+</html>

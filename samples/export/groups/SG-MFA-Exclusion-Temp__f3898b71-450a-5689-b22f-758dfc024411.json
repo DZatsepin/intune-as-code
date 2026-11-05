@@ -1,0 +1,8 @@
+{
+  "description": "Temporary MFA exclusion for migration",
+  "displayName": "SG-MFA-Exclusion-Temp",
+  "groupTypes": [],
+  "id": "f3898b71-450a-5689-b22f-758dfc024411",
+  "mailEnabled": false,
+  "securityEnabled": true
+}

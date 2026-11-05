@@ -1,0 +1,8 @@
+{
+  "description": "Remaining Windows 10 devices",
+  "displayName": "SG-Win10-Legacy",
+  "groupTypes": [],
+  "id": "ad9f610e-fefc-5a48-b749-67031c4b06e5",
+  "mailEnabled": false,
+  "securityEnabled": true
+}

@@ -1,0 +1,17 @@
+{
+  "@odata.type": "#microsoft.graph.deviceManagementConfigurationPolicy",
+  "assignments": [
+    {
+      "id": "b8670bec-c13b-5650-901b-339288a22b94",
+      "target": {
+        "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+        "groupId": "8db49d3c-4484-5206-8034-9422bacaf4d8"
+      }
+    }
+  ],
+  "displayName": "BitLocker - Finance",
+  "id": "1c690617-f230-596a-8c6b-dc1342130480",
+  "name": "BitLocker - Finance",
+  "platforms": "windows10",
+  "technologies": "mdm"
+}

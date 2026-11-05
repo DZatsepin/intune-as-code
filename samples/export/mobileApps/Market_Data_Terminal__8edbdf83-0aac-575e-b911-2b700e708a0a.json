@@ -1,0 +1,16 @@
+{
+  "@odata.type": "#microsoft.graph.win32LobApp",
+  "assignments": [
+    {
+      "id": "9e3e34da-6a97-52ac-a27c-3b8787ddb691",
+      "intent": "required",
+      "target": {
+        "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+        "groupId": "735b8071-6320-5ebf-800f-4b0b8b509d39"
+      }
+    }
+  ],
+  "displayName": "Market Data Terminal",
+  "id": "8edbdf83-0aac-575e-b911-2b700e708a0a",
+  "publisher": "Example Vendor"
+}

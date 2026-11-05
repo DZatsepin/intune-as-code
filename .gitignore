@@ -1,0 +1,13 @@
+# Never commit a real tenant export or report to this public repository.
+# Keep real exports in a separate PRIVATE repository.
+/export/
+/out/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.env
+.env

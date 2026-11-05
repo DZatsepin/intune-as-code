@@ -1,0 +1,8 @@
+{
+  "description": "Windows 11 rollout wave 3 (completed)",
+  "displayName": "SG-Win11-Wave3",
+  "groupTypes": [],
+  "id": "176a766b-4208-540d-b829-b1a42a76277e",
+  "mailEnabled": false,
+  "securityEnabled": true
+}

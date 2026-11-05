@@ -1,0 +1,23 @@
+{
+  "@odata.type": "#microsoft.graph.windowsUpdateForBusinessConfiguration",
+  "assignments": [
+    {
+      "id": "10f7f7b0-7268-5890-8d95-ec8de0faac8e",
+      "target": {
+        "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+        "groupId": "db7b4ed7-5961-5f30-86cd-c2f1fb65b9a5"
+      }
+    },
+    {
+      "id": "a70d603d-9004-5ee4-80f3-6529aae4ad8c",
+      "target": {
+        "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+        "groupId": "c3234857-8108-58eb-bd6c-5b5a9e7404d2"
+      }
+    }
+  ],
+  "displayName": "Update ring - Pilot",
+  "featureUpdatesDeferralPeriodInDays": 0,
+  "id": "5fd99248-f0a7-52e5-99bf-e26939bd15d9",
+  "qualityUpdatesDeferralPeriodInDays": 0
+}

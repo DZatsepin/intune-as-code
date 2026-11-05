@@ -1,0 +1,23 @@
+{
+  "@odata.type": "#microsoft.graph.windowsUpdateForBusinessConfiguration",
+  "assignments": [
+    {
+      "id": "c2de1906-a4d8-54a1-a2e6-60744af0f4a3",
+      "target": {
+        "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+        "groupId": "0d9645ce-2bdc-5064-be2d-016bd581400a"
+      }
+    },
+    {
+      "id": "f91a0cf4-4d69-5e91-996b-45eee1da05b7",
+      "target": {
+        "@odata.type": "#microsoft.graph.exclusionGroupAssignmentTarget",
+        "groupId": "db7b4ed7-5961-5f30-86cd-c2f1fb65b9a5"
+      }
+    }
+  ],
+  "displayName": "Update ring - Broad",
+  "featureUpdatesDeferralPeriodInDays": 30,
+  "id": "3e52b974-68ea-5a10-8946-06b00e533048",
+  "qualityUpdatesDeferralPeriodInDays": 7
+}

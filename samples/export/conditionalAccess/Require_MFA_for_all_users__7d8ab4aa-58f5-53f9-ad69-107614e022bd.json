@@ -1,0 +1,29 @@
+{
+  "@odata.type": "#microsoft.graph.conditionalAccessPolicy",
+  "conditions": {
+    "applications": {
+      "includeApplications": [
+        "All"
+      ]
+    },
+    "users": {
+      "excludeGroups": [
+        "39734590-38c4-55ce-9e7f-ce9240b79c0a",
+        "f3898b71-450a-5689-b22f-758dfc024411"
+      ],
+      "includeGroups": [],
+      "includeUsers": [
+        "All"
+      ]
+    }
+  },
+  "displayName": "Require MFA for all users",
+  "grantControls": {
+    "builtInControls": [
+      "mfa"
+    ],
+    "operator": "OR"
+  },
+  "id": "7d8ab4aa-58f5-53f9-ad69-107614e022bd",
+  "state": "enabled"
+}

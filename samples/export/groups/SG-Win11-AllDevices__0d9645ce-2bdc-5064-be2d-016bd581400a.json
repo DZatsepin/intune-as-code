@@ -1,0 +1,8 @@
+{
+  "description": "All Windows 11 devices",
+  "displayName": "SG-Win11-AllDevices",
+  "groupTypes": [],
+  "id": "0d9645ce-2bdc-5064-be2d-016bd581400a",
+  "mailEnabled": false,
+  "securityEnabled": true
+}

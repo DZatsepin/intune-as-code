@@ -1,0 +1,75 @@
+# Nightly drift detection. Copy to .github/workflows/ in a PRIVATE repository that holds your export.
+#
+# Prerequisites
+#   1. App registration in Entra ID with Microsoft Graph application permissions (read-only):
+#      Group.Read.All, DeviceManagementConfiguration.Read.All, DeviceManagementApps.Read.All,
+#      DeviceManagementManagedDevices.Read.All, Policy.Read.All  (admin consent required)
+#   2. A federated credential on that app for this repository (workload identity federation),
+#      so no client secret is stored anywhere.
+#   3. Repository variables AZURE_CLIENT_ID and AZURE_TENANT_ID.
+#   4. Settings > Actions > General > "Allow GitHub Actions to create and approve pull requests".
+#   5. Branch protection on main: changes only through reviewed pull requests.
+
+name: Nightly drift detection
+
+on:
+  schedule:
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sign in with workload identity federation
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Get a Microsoft Graph token
+        shell: pwsh
+        run: |
+          $token = az account get-access-token --resource-type ms-graph --query accessToken -o tsv
+          Write-Output "::add-mask::$token"
+          "GRAPH_TOKEN=$token" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Export tenant configuration
+        shell: pwsh
+        run: |
+          Install-Module Microsoft.Graph.Authentication -Scope CurrentUser -Force
+          ./src/Export-TenantConfig.ps1 -OutputPath ./export -AccessToken $env:GRAPH_TOKEN
+          ./src/Get-GroupUsage.ps1 -ExportPath ./export -OutputPath ./out
+
+      - name: Upload group usage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: group-usage
+          path: out/
+
+      - name: Open a pull request if anything changed outside Git
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$(git status --porcelain export)" ]; then
+            echo "No drift."
+            exit 0
+          fi
+          branch="drift/$(date -u +%Y-%m-%d)"
+          git config user.name  "drift-bot"
+          git config user.email "drift-bot@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add export
+          git commit -m "Configuration drift detected $(date -u +%F)"
+          git push -u origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "Configuration drift $(date -u +%F)" \
+            --body "These changes were made in the tenant, not through Git. Approve to accept them as the new baseline, or close the PR and revert the change in the tenant."

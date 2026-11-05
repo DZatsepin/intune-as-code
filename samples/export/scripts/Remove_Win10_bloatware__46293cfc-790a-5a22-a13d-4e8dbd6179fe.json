@@ -1,0 +1,16 @@
+{
+  "@odata.type": "#microsoft.graph.deviceManagementScript",
+  "assignments": [
+    {
+      "id": "0acb6193-7903-5566-9ee6-6c46b9584e40",
+      "target": {
+        "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+        "groupId": "b22ca84e-5271-5d59-9e45-467c3f22bda6"
+      }
+    }
+  ],
+  "displayName": "Remove Win10 bloatware",
+  "fileName": "Remove-Bloatware.ps1",
+  "id": "46293cfc-790a-5a22-a13d-4e8dbd6179fe",
+  "runAsAccount": "system"
+}

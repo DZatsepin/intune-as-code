@@ -1,0 +1,16 @@
+{
+  "@odata.type": "#microsoft.graph.windows10CompliancePolicy",
+  "assignments": [
+    {
+      "id": "8d1c8f5e-2384-5a8e-85bf-cf434611d4d8",
+      "target": {
+        "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+        "groupId": "0d9645ce-2bdc-5064-be2d-016bd581400a"
+      }
+    }
+  ],
+  "bitLockerEnabled": true,
+  "displayName": "Windows 11 compliance",
+  "id": "2a1f3639-456c-5d1c-8148-d67e5528af66",
+  "secureBootEnabled": true
+}
