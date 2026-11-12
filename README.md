@@ -4,7 +4,7 @@ Export your Intune and Entra ID configuration to Git, catch changes made outside
 
 **Live demo of the group usage report:** https://dzatsepin.github.io/intune-as-code/
 
-![Group usage report: a group that looks obsolete is still excluded from an MFA policy](docs/demo.gif)
+![Group usage report: after a Windows 11 rollout, which of the leftover groups are safe to delete](docs/demo.gif)
 
 The demo runs on **Pokatyt Incorporated**, a fictional tenant. All groups, policies and IDs in `samples/` are made up.
 
@@ -16,7 +16,7 @@ Three things go wrong in almost every Microsoft 365 tenant that is managed throu
 
 1. **Nobody knows what changed.** A setting is changed in the Intune portal on a Friday afternoon. There is an audit log entry, but no review, no reason and no easy way back.
 2. **Configuration can't be evidenced.** Auditors and due diligence questionnaires ask for the current baseline and its change history. Screenshots of the portal are not evidence.
-3. **Groups pile up.** A Windows 11 rollout leaves behind pilot groups, wave groups and test groups. Before you delete one you need to know every policy, app and Conditional Access rule that references it, including exclusions. The portal doesn't show that in one place, so groups never get deleted, or worse, a group excluded from an MFA policy is deleted and the policy silently starts applying to people it shouldn't.
+3. **Temporary groups become permanent.** A Windows 11 rollout needs a migration group, pilot groups and wave groups. When the rollout is over they are still assigned to policies, apps and update rings, and one of them is probably excluded from something. Before you delete a group you need every reference to it, including exclusions. The portal doesn't show that in one place, so the groups stay for years, or one is deleted and a policy quietly starts applying to different devices or people.
 
 ## Approach
 
@@ -66,12 +66,29 @@ SG-Win11-Wave1             unused    0
 SG-Win11-Wave3             unused    0
 ```
 
-Two findings a portal review would probably miss:
+The rollout is finished, so which of its groups can go? The report answers per group:
 
-- `SG-Win11-Wave2` looks finished, but a clean-up script is still assigned to it.
-- `SG-MFA-Exclusion-Temp` was meant to be temporary, and it is still excluded from the "Require MFA for all users" policy. That is a security finding, not just housekeeping.
+| Group | Verdict | Why |
+|---|---|---|
+| `SG-Win11-Wave1`, `SG-Win11-Wave3` | Safe to delete | No assignment, exclusion or ID reference anywhere in the export |
+| `SG-Win11-Wave2` | Don't delete yet | Looks finished, but a clean-up script is still assigned to it |
+| `SG-Win11-AllDevices` | Replace first | The migration group is still the target of four policies. Delete it and most devices lose them |
+| `SG-Win11-Pilot` | Don't delete yet | Excluded from the broad update ring. Delete it and the pilot devices fall under that ring |
+| `SG-MFA-Exclusion-Temp` | Review | Meant to be temporary, still excluded from "Require MFA for all users". A security finding, not housekeeping |
 
-In practice this turns "can I delete this group?" from an afternoon of clicking through the portal into a few seconds, and gives you a reviewed history of every configuration change.
+![The pilot group is assigned to one update ring and excluded from another](docs/report.png)
+
+"Can I delete this group?" becomes a lookup instead of an afternoon in the portal, and every later change to the configuration has a reviewed history.
+
+## Retiring a temporary group safely
+
+The sequence this repository is built around. Nothing is deleted until the last step.
+
+1. **Export and inventory.** Export the configuration and list every reference to the group you want to retire.
+2. **Replace, don't remove.** In each policy and app, swap the temporary group for the permanent ones (for example dynamic groups by device type) in the same change, so nothing is unassigned in between.
+3. **Split a policy only when its settings differ.** If one device type needs different settings, it gets its own policy. If the settings are identical, add another assignment group. Two copies of the same policy will drift apart.
+4. **Delete what is assigned to nothing.** Old policies with no assignments go first; they are the cheapest win.
+5. **Export again, then delete.** Re-run the report. Delete the group only when it shows no references, and commit the export so the clean-up itself is on record.
 
 ## How to run
 
@@ -84,7 +101,7 @@ cd intune-as-code
 ./src/Get-GroupUsage.ps1 -Group SG-Win11-Pilot    # one group
 ```
 
-Then open `report/index.html` (or run `python -m http.server` and browse to `/report/`) and use **Load JSON** with `out/group-usage.json`.
+Then open `report/index.html` (or run `python -m http.server` and browse to `/report/`) and use **Load JSON** with `out/group-usage.json`. Type part of a name, for example `Win11`, to filter the groups.
 
 **Your own tenant** (read-only):
 

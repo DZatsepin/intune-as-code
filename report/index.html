@@ -58,7 +58,9 @@
   @media (prefers-reduced-motion: reduce) { .beam { display:none; } }
   .legend { color:var(--muted); font-size:12px; margin-top:8px; display:flex; gap:18px; flex-wrap:wrap; }
   .banner { margin:10px 20px; padding:10px 12px; border:1px solid var(--warn); border-radius:8px; }
-  @media (max-width: 1000px) { main { grid-template-columns:1fr; } aside { border-left:0; border-top:1px solid var(--line); } }
+  body.stack main { grid-template-columns:1fr; } body.stack aside { border-left:0; border-top:1px solid var(--line); }
+  body.stack #svg { width:100%; max-width:640px; height:auto; }
+  body.stack input[type=search] { flex:1 1 200px; width:auto; }
 </style>
 </head>
 <body>
@@ -66,7 +68,7 @@
   <h1>Group <span>usage</span></h1>
   <span class="sub" id="sub">Sample: Pokatyt Incorporated (fictional tenant)</span>
   <span class="sp"></span>
-  <input type="search" id="q" placeholder="Search a group…" autocomplete="off" aria-label="Search a group">
+  <input type="search" id="q" placeholder="Filter groups, e.g. Win11" autocomplete="off" aria-label="Filter groups by name">
   <button id="unusedBtn" title="Show only groups that are not used anywhere">Unused only</button>
   <label class="btn" title="Open a group-usage.json produced by Get-GroupUsage.ps1">Load JSON<input type="file" id="file" accept=".json,application/json"></label>
 </header>
@@ -85,21 +87,31 @@ const COLUMNS = [
   { title: "Apps and scripts", cats: ["mobileApps", "scripts"] },
   { title: "Conditional Access", cats: ["conditionalAccess"] },
 ];
-const W = 200, H = 44, GX = 280, ROW = 52, TOP = 34;
-let data = null, sel = null, unusedOnly = false;
+const W = 200, H = 44, GX = 280, GXS = 290, ROW = 52, TOP = 34;
+let data = null, sel = null, unusedOnly = false, query = "";
+const stacked = () => innerWidth <= 1000 || new URLSearchParams(location.search).get("layout") === "stack";
 const pos = {};
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const trim = (s, n) => s.length > n ? s.slice(0, n - 1) + "…" : s;
 const grp = id => data.groups.find(g => g.id === id);
 
-function visibleGroups() { return data.groups.filter(g => !unusedOnly || g.status === "unused"); }
-function usedObjects() {
-  const ids = new Set(data.groups.flatMap(g => (g.usage || []).map(u => u.objectId)));
+function visibleGroups() {
+  return data.groups.filter(g => (!unusedOnly || g.status === "unused") && (!query || g.displayName.toLowerCase().includes(query)));
+}
+function usedObjects(groups) {
+  const ids = new Set(groups.flatMap(g => (g.usage || []).map(u => u.objectId)));
   return data.objects.filter(o => ids.has(o.id));
 }
 function layout(groups, objs) {
+  Object.keys(pos).forEach(k => delete pos[k]);
   groups.forEach((g, i) => pos["g:" + g.id] = { x: 0, y: TOP + i * ROW });
   const heights = [groups.length * ROW];
+  if (stacked()) {
+    // Narrow screens: groups on the left, every referenced object in one column on the right.
+    const order = COLUMNS.flatMap(c => objs.filter(o => c.cats.includes(o.category)));
+    order.forEach((o, i) => pos["o:" + o.id] = { x: GXS, y: TOP + i * ROW });
+    return TOP + Math.max(groups.length, order.length) * ROW + 10;
+  }
   COLUMNS.forEach((c, ci) => {
     const list = objs.filter(o => c.cats.includes(o.category));
     list.forEach((o, i) => pos["o:" + o.id] = { x: (ci + 1) * GX, y: TOP + i * ROW });
@@ -114,8 +126,9 @@ function path(a, b, k) {
 
 function render() {
   if (!data) return;
-  const groups = visibleGroups(), objs = usedObjects();
-  const height = layout(groups, objs), width = GX * COLUMNS.length + W + 10;
+  const groups = visibleGroups(), objs = usedObjects(groups), narrow = stacked();
+  document.body.classList.toggle("stack", narrow);
+  const height = layout(groups, objs), width = narrow ? GXS + W + 2 : GX * COLUMNS.length + W + 10;
   const svg = document.getElementById("svg");
   svg.setAttribute("viewBox", `0 0 ${width} ${height}`); svg.setAttribute("width", width); svg.setAttribute("height", height);
   const s = data.summary;
@@ -127,8 +140,10 @@ function render() {
     `<div class="stat"><b>${s.objects}</b><span>policies and apps</span></div>`;
   document.getElementById("unusedBtn").classList.toggle("active", unusedOnly);
 
-  let out = `<text class="colhead" x="0" y="18">Entra ID groups</text>` +
-    COLUMNS.map((c, i) => `<text class="colhead" x="${(i + 1) * GX}" y="18">${c.title}</text>`).join("");
+  let out = `<text class="colhead" x="0" y="18">Entra ID groups</text>` + (narrow
+    ? `<text class="colhead" x="${GXS}" y="18">Referenced by</text>`
+    : COLUMNS.map((c, i) => `<text class="colhead" x="${(i + 1) * GX}" y="18">${c.title}</text>`).join(""));
+  if (!groups.length) out += `<text class="m" x="0" y="${TOP + 24}" style="fill:var(--muted);font-size:13px">No group matches this filter.</text>`;
   const selG = sel ? grp(sel) : null, active = selG ? selG.usage : [];
   const onObj = new Set(active.map(u => u.objectId));
   let edges = "", beams = "";
@@ -162,7 +177,7 @@ function renderPanel() {
   if (!sel) {
     const unused = data.groups.filter(g => g.status === "unused"), warn = data.groups.filter(g => g.warning);
     el.innerHTML = `<h2>Can I delete this group?</h2>
-      <p class="muted">Click a group or search for it. You'll see every Intune policy, app, script and Conditional Access policy that references it, including exclusions.</p>
+      <p class="muted">Click a group, or type part of a name to filter (try <b>Win11</b>). You'll see every Intune policy, app, script and Conditional Access policy that references it, including exclusions.</p>
       <h3>Not used anywhere (${unused.length})</h3><ul>${unused.map(g => `<li><span class="link" data-g="${esc(g.id)}">${esc(g.displayName)}</span></li>`).join("") || "<li class='muted'>None</li>"}</ul>
       <h3>Excluded from Conditional Access (${warn.length})</h3><ul>${warn.map(g => `<li><span class="link" data-g="${esc(g.id)}">${esc(g.displayName)}</span></li>`).join("") || "<li class='muted'>None</li>"}</ul>
       <p class="muted">Generated ${esc(data.generatedAt)} from <code>${esc(data.source)}</code>. Read-only: nothing is changed in the tenant.</p>`;
@@ -181,24 +196,27 @@ function renderPanel() {
 
 function fitSvg() {
   const svg = document.getElementById("svg");
-  if (innerWidth <= 1000) { svg.style.maxHeight = ""; return; }
+  if (stacked()) { svg.style.maxHeight = ""; return; }
   svg.style.maxHeight = Math.max(320, innerHeight - svg.getBoundingClientRect().top - 44) + "px";
 }
-addEventListener("resize", () => data && fitSvg());
+addEventListener("resize", () => data && render());
 document.addEventListener("click", e => {
   const n = e.target.closest("[data-g]");
   if (n) { sel = sel === n.dataset.g ? null : n.dataset.g; render(); }
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape") { sel = null; render(); } });
 document.getElementById("q").addEventListener("input", e => {
-  const v = e.target.value.trim().toLowerCase();
-  const m = v ? data.groups.find(g => g.displayName.toLowerCase().includes(v)) : null;
-  sel = m ? m.id : null; if (m && unusedOnly && m.status !== "unused") unusedOnly = false; render();
+  // Typing filters the list. One match selects it; several matches show them together.
+  query = e.target.value.trim().toLowerCase();
+  if (query) unusedOnly = false;
+  const m = query ? data.groups.filter(g => g.displayName.toLowerCase().includes(query)) : [];
+  sel = m.length === 1 ? m[0].id : (m.some(g => g.id === sel) ? sel : null);
+  render();
 });
-document.getElementById("unusedBtn").onclick = () => { unusedOnly = !unusedOnly; sel = null; render(); };
+document.getElementById("unusedBtn").onclick = () => { unusedOnly = !unusedOnly; sel = null; query = ""; document.getElementById("q").value = ""; render(); };
 document.getElementById("file").addEventListener("change", async e => {
   const f = e.target.files[0]; if (!f) return;
-  try { data = JSON.parse(await f.text()); sel = null; document.getElementById("sub").textContent = "Your data: " + f.name; document.getElementById("banner").innerHTML = ""; render(); }
+  try { data = JSON.parse(await f.text()); sel = null; query = ""; document.getElementById("q").value = ""; document.getElementById("sub").textContent = "Your data: " + f.name; document.getElementById("banner").innerHTML = ""; render(); }
   catch { document.getElementById("banner").innerHTML = `<div class="banner">That file isn't a group-usage.json from Get-GroupUsage.ps1.</div>`; }
   e.target.value = "";
 });
